@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 // Module de mongoose permettant de vérifier si l'utilisateur n'existe pas déjà dans la base de donnée
 const uniqueValidator = require('mongoose-unique-validator');
 

@@ -24,7 +24,7 @@ exports.signup = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
-// Connexion d'un utilisateur
+// Connexion d'un utilisateur  
 exports.login = (req, res, next) => {
   // Recherche de l'utilisateur dans la base de donnée via son email
   User.findOne({ email: req.body.email })

@@ -1,4 +1,4 @@
-// Importation du module JWT
+// Importation du module JWT 
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {

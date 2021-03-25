@@ -1,5 +1,5 @@
 // Importation du module multer pour les photos
-const multer = require('multer');
+const multer = require('multer'); 
 
 // Extensions des images acceptées par multer
 const MIME_TYPES = {

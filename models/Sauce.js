@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 
 // Mise en place du schéma de création de sauce
 const sauceSchema = mongoose.Schema({
