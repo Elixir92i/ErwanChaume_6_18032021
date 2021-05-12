@@ -24,6 +24,17 @@ exports.createSauce = (req, res, next) => {
 
 // Modifier une sauce
 exports.modifySauce = (req, res, next) => {
+    // Suppression de l'ancienne image si elle est modifiée
+    var file = req.file;
+    Sauce.findOne({ _id: req.params.id })
+        .then(sauce => {
+            // Suppression de l'image associée dans la base de donnée avant modification
+            const filename = sauce.imageUrl.split('/images/')[1];
+            if (file && filename != file.filename) {
+                fs.unlink(`images/${filename}`, () => {
+                });
+            }
+        });
     // Recherche de l'image associée
     const sauceObject = req.file ?
         {
@@ -31,6 +42,7 @@ exports.modifySauce = (req, res, next) => {
             ...JSON.parse(req.body.sauce),
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         } : { ...req.body };
+
     // Mise à jour de la sauce
     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
@@ -92,7 +104,7 @@ exports.likeSauce = (req, res, next) => {
                     // Ajout de son like au compteur
                     likes++;
                 }
-            // L'utilisateur dislike la sauce
+                // L'utilisateur dislike la sauce
             } else if (like == -1) {
                 // Vérification que l'utilisateur n'a pas déjà dislike la sauce
                 if (!usersDisliked.includes(userId)) {
@@ -101,8 +113,8 @@ exports.likeSauce = (req, res, next) => {
                     // Ajout de son dislike au compteur
                     dislikes++;
                 }
-            // L'utilisateur retire son like ou son dislike de la sauce
-            } else if (like == 0){
+                // L'utilisateur retire son like ou son dislike de la sauce
+            } else if (like == 0) {
                 // L'utilisateur retire son like de la sauce
                 if (usersLiked.includes(userId)) {
                     // Recherche de l'ID de l'utilisateur dans le tableau des likes (userLiked)

@@ -5,15 +5,23 @@ const User = require('../models/User');
 // Importation du module JWT (token unique par utilisateur)
 const jwt = require('jsonwebtoken');
 
+var crypto = require('crypto');
+var algorithm = 'aes256';
+var token = process.env.TOKENMAIL;
+
 // Création d'un utilisateur
 exports.signup = (req, res, next) => {
   // Hashage du mot de passe récupéré dans le formulaire d'inscription
+  var cipher = crypto.createCipher(algorithm, token);
+  var crypted = cipher.update(req.body.email, 'utf8', 'hex');
+  crypted += cipher.final('hex');
+
   bcrypt.hash(req.body.password, 10)
     .then(hash => {
       // Création d'un nouvel utilisateur dans la base de donnée
       const user = new User({
         // Récupération de l'adresse mail écrite dans le formulaire d'inscription
-        email: req.body.email,
+        email: crypted,
         // Récupération du mot de passe hashé
         password: hash
       });
@@ -27,7 +35,11 @@ exports.signup = (req, res, next) => {
 // Connexion d'un utilisateur  
 exports.login = (req, res, next) => {
   // Recherche de l'utilisateur dans la base de donnée via son email
-  User.findOne({ email: req.body.email })
+  var cipher = crypto.createCipher(algorithm, token);
+  var crypted = cipher.update(req.body.email, 'utf8', 'hex');
+  crypted += cipher.final('hex');
+
+  User.findOne({ email: crypted })
     .then(user => {
       // Erreur si l'utilisateur n'est pas trouvé
       if (!user) {
@@ -45,7 +57,7 @@ exports.login = (req, res, next) => {
             userId: user._id,
             token: jwt.sign(
               { userId: user._id },
-              'Y_GnWYTBjvZj0f_7ShMfnw6vp47BUtEvxqcBsvRU3sA',
+              process.env.TOKEN,
               { expiresIn: '24h' }
             )
           });
